@@ -1,6 +1,38 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
 out
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS
 .DS_Store
-.eslintcache
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs & cache
 *.log*
+.eslintcache
+.cache
+
+# Electron packager output
+release/
+
+# CLAUDE
+CLAUDE.md
+.claude/
+
+.vscode/
+.idea/
