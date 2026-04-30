@@ -18,7 +18,7 @@ export interface LoginResponse {
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
   const params = new URLSearchParams()
-  params.append('username', email)
+  params.append('email', email)
   params.append('password', password)
 
   const { data } = await client.post<LoginResponse>('/users/login', params, {
