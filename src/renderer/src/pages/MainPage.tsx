@@ -1,6 +1,7 @@
+import React from 'react'
 import { useAuthStore } from '@renderer/stores/authStore'
 
-export default function MainPage() {
+export default function MainPage(): React.JSX.Element {
   const logout = useAuthStore((s) => s.logout)
 
   return (
