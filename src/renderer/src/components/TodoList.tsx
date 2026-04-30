@@ -1,13 +1,12 @@
 import { useState, useRef } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { useTodoStore } from '@renderer/stores/todoStore'
+import { useThemeStore } from '@renderer/stores/themeStore'
+import { getTokens } from '@renderer/lib/theme'
 
-interface Props {
-  accentColor: string
-  opacity: number
-}
-
-export default function TodoList({ accentColor, opacity }: Props) {
+export default function TodoList() {
+  const { colorMode, accentColor, widgetOpacity } = useThemeStore()
+  const t = getTokens(colorMode)
   const { todos, addTodo, toggleTodo, deleteTodo } = useTodoStore()
   const [input, setInput] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -20,23 +19,25 @@ export default function TodoList({ accentColor, opacity }: Props) {
     inputRef.current?.focus()
   }
 
-  const pending = todos.filter((t) => !t.done)
-  const done = todos.filter((t) => t.done)
+  const pending = todos.filter((todo) => !todo.done)
+  const done = todos.filter((todo) => todo.done)
   const sorted = [...pending, ...done]
 
   return (
     <div
       className="rounded-2xl p-6 h-full flex flex-col"
       style={{
-        background: `rgba(28, 28, 36, ${opacity / 100})`,
+        background: t.widgetBg(widgetOpacity),
         backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.07)'
+        border: `1px solid ${t.widgetBorder}`
       }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-medium text-white">할 일</h3>
-        <span className="text-xs text-[rgba(235,235,245,0.35)]">
+        <h3 className="text-sm font-medium" style={{ color: t.text }}>
+          할 일
+        </h3>
+        <span className="text-xs" style={{ color: t.textMuted }}>
           {pending.length > 0 ? `${pending.length}개 남음` : '모두 완료!'}
         </span>
       </div>
@@ -49,7 +50,14 @@ export default function TodoList({ accentColor, opacity }: Props) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="새 할 일 추가..."
-          className="flex-1 px-3 py-2 rounded-xl text-sm text-white placeholder-[rgba(235,235,245,0.22)] bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.07)] focus:outline-none focus:border-[rgba(255,255,255,0.18)] transition-colors"
+          className="flex-1 px-3 py-2 rounded-xl text-sm focus:outline-none transition-colors"
+          style={{
+            color: t.text,
+            background: t.inputBg,
+            border: `1px solid ${t.inputBorder}`,
+          }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = t.inputHoverBorder)}
+          onBlur={(e) => (e.currentTarget.style.borderColor = t.inputBorder)}
         />
         <button
           onClick={handleAdd}
@@ -65,7 +73,9 @@ export default function TodoList({ accentColor, opacity }: Props) {
         {sorted.map((todo) => (
           <div
             key={todo.id}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[rgba(255,255,255,0.04)] group transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl group transition-colors"
+            onMouseEnter={(e) => (e.currentTarget.style.background = t.hoverBg)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             {/* Checkbox */}
             <button
@@ -74,7 +84,7 @@ export default function TodoList({ accentColor, opacity }: Props) {
               style={
                 todo.done
                   ? { background: accentColor, borderColor: accentColor }
-                  : { background: 'transparent', borderColor: 'rgba(235,235,245,0.28)' }
+                  : { background: 'transparent', borderColor: t.textSubtle }
               }
             >
               {todo.done && (
@@ -91,18 +101,19 @@ export default function TodoList({ accentColor, opacity }: Props) {
             </button>
 
             <span
-              className={`flex-1 text-sm leading-snug transition-colors ${
-                todo.done
-                  ? 'text-[rgba(235,235,245,0.28)] line-through'
-                  : 'text-[rgba(235,235,245,0.82)]'
-              }`}
+              className="flex-1 text-sm leading-snug transition-colors"
+              style={{
+                color: todo.done ? t.textSubtle : t.textSecondary,
+                textDecoration: todo.done ? 'line-through' : 'none'
+              }}
             >
               {todo.text}
             </span>
 
             <button
               onClick={() => deleteTodo(todo.id)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-[rgba(235,235,245,0.28)] hover:text-red-400"
+              className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400"
+              style={{ color: t.textSubtle }}
             >
               <Trash2 size={13} />
             </button>
@@ -110,7 +121,9 @@ export default function TodoList({ accentColor, opacity }: Props) {
         ))}
 
         {todos.length === 0 && (
-          <p className="text-center text-[rgba(235,235,245,0.2)] text-sm py-10">할 일이 없어요!</p>
+          <p className="text-center text-sm py-10" style={{ color: t.textSubtle }}>
+            할 일이 없어요!
+          </p>
         )}
       </div>
     </div>
