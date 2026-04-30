@@ -42,7 +42,7 @@
 
 **Request Body** (`application/x-www-form-urlencoded`)
 ```
-username=user@example.com
+email=user@example.com
 password=abcd1234
 ```
 
@@ -79,7 +79,6 @@ password=abcd1234
 [
   {
     "id": 1,
-    "user_id": 1,
     "title": "운동하기",
     "description": "30분 달리기",
     "is_completed": false,
@@ -164,7 +163,6 @@ password=abcd1234
 ```json
 {
   "id": 1,
-  "user_id": 1,
   "name": "모찌",
   "level": 1,
   "exp": 0,
@@ -212,3 +210,15 @@ password=abcd1234
 | 코드 | 원인 |
 |------|------|
 | 404  | 캐릭터 없음 |
+
+---
+
+## 헬스체크
+
+### GET /health
+서버 상태 확인
+
+**Response** `200`
+```json
+{}
+```
