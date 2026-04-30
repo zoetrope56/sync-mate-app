@@ -24,6 +24,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
   const { data } = await client.post<LoginResponse>('/users/login', params, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
+  console.log('[auth] login response:', data)
   return data
 }
 
