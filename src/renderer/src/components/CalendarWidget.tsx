@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useThemeStore } from '@renderer/stores/themeStore'
+import { getTokens } from '@renderer/lib/theme'
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
-
-interface Props {
-  accentColor: string
-  opacity: number
-}
 
 interface Cell {
   day: number
@@ -34,7 +31,9 @@ function buildCells(year: number, month: number): Cell[] {
   return cells
 }
 
-export default function CalendarWidget({ accentColor, opacity }: Props) {
+export default function CalendarWidget() {
+  const { colorMode, accentColor, widgetOpacity } = useThemeStore()
+  const t = getTokens(colorMode)
   const today = new Date()
   const [view, setView] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
 
@@ -52,25 +51,43 @@ export default function CalendarWidget({ accentColor, opacity }: Props) {
     <div
       className="rounded-2xl p-6 h-full flex flex-col"
       style={{
-        background: `rgba(28, 28, 36, ${opacity / 100})`,
+        background: t.widgetBg(widgetOpacity),
         backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.07)'
+        border: `1px solid ${t.widgetBorder}`
       }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={() => setView(new Date(year, month - 1, 1))}
-          className="p-1.5 rounded-lg hover:bg-[rgba(255,255,255,0.07)] transition-colors text-[rgba(235,235,245,0.4)] hover:text-white"
+          className="p-1.5 rounded-lg transition-colors"
+          style={{ color: t.textMuted }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = t.hoverBg
+            e.currentTarget.style.color = t.text
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent'
+            e.currentTarget.style.color = t.textMuted
+          }}
         >
           <ChevronLeft size={15} />
         </button>
-        <h3 className="text-sm font-medium text-white tracking-wide">
+        <h3 className="text-sm font-medium tracking-wide" style={{ color: t.text }}>
           {year}년 {month + 1}월
         </h3>
         <button
           onClick={() => setView(new Date(year, month + 1, 1))}
-          className="p-1.5 rounded-lg hover:bg-[rgba(255,255,255,0.07)] transition-colors text-[rgba(235,235,245,0.4)] hover:text-white"
+          className="p-1.5 rounded-lg transition-colors"
+          style={{ color: t.textMuted }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = t.hoverBg
+            e.currentTarget.style.color = t.text
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent'
+            e.currentTarget.style.color = t.textMuted
+          }}
         >
           <ChevronRight size={15} />
         </button>
@@ -83,12 +100,7 @@ export default function CalendarWidget({ accentColor, opacity }: Props) {
             key={d}
             className="text-center text-[11px] font-medium py-1"
             style={{
-              color:
-                i === 0
-                  ? 'rgba(248,113,113,0.7)'
-                  : i === 6
-                    ? 'rgba(96,165,250,0.7)'
-                    : 'rgba(235,235,245,0.3)'
+              color: i === 0 ? t.sunday : i === 6 ? t.saturday : t.textSubtle
             }}
           >
             {d}
@@ -102,10 +114,10 @@ export default function CalendarWidget({ accentColor, opacity }: Props) {
           const todayCell = isToday(cell)
           const dow = idx % 7
 
-          let textColor = 'rgba(235,235,245,0.75)'
-          if (!cell.current) textColor = 'rgba(235,235,245,0.18)'
-          else if (dow === 0) textColor = 'rgba(248,113,113,0.7)'
-          else if (dow === 6) textColor = 'rgba(96,165,250,0.7)'
+          let textColor = t.textSecondary
+          if (!cell.current) textColor = t.textSubtle
+          else if (dow === 0) textColor = t.sunday
+          else if (dow === 6) textColor = t.saturday
 
           return (
             <div key={idx} className="flex items-center justify-center">

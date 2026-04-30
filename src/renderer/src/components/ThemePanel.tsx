@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Settings, X } from 'lucide-react'
+import { Settings, X, Sun, Moon } from 'lucide-react'
 import { useThemeStore } from '@renderer/stores/themeStore'
+import { getTokens } from '@renderer/lib/theme'
 
 const PRESET_COLORS = [
   { name: '인디고', value: '#6988e6' },
@@ -12,15 +13,26 @@ const PRESET_COLORS = [
 ]
 
 export default function ThemePanel() {
-  const { accentColor, widgetOpacity, setAccentColor, setWidgetOpacity } = useThemeStore()
+  const { colorMode, accentColor, widgetOpacity, setColorMode, setAccentColor, setWidgetOpacity } =
+    useThemeStore()
+  const t = getTokens(colorMode)
   const [open, setOpen] = useState(false)
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="p-2 rounded-xl hover:bg-[rgba(255,255,255,0.07)] transition-colors text-[rgba(235,235,245,0.45)] hover:text-white"
+        className="p-2 rounded-xl transition-colors"
+        style={{ color: t.textMuted }}
         title="테마 설정"
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = t.hoverBg
+          e.currentTarget.style.color = t.text
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent'
+          e.currentTarget.style.color = t.textMuted
+        }}
       >
         <Settings size={17} />
       </button>
@@ -30,26 +42,68 @@ export default function ThemePanel() {
           <div
             className="absolute right-0 top-0 h-full w-72 flex flex-col"
             style={{
-              background: 'rgba(22, 22, 30, 0.97)',
+              background: t.panelBg,
               backdropFilter: 'blur(30px)',
-              borderLeft: '1px solid rgba(255,255,255,0.08)'
+              borderLeft: `1px solid ${t.panelBorder}`
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-[rgba(255,255,255,0.06)]">
-              <h3 className="text-sm font-semibold text-white">테마 설정</h3>
+            {/* Panel header */}
+            <div
+              className="flex items-center justify-between px-6 pt-6 pb-5"
+              style={{ borderBottom: `1px solid ${t.divider}` }}
+            >
+              <h3 className="text-sm font-semibold" style={{ color: t.text }}>
+                테마 설정
+              </h3>
               <button
                 onClick={() => setOpen(false)}
-                className="text-[rgba(235,235,245,0.4)] hover:text-white transition-colors"
+                className="transition-colors"
+                style={{ color: t.textMuted }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = t.text)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = t.textMuted)}
               >
                 <X size={17} />
               </button>
             </div>
 
             <div className="flex-1 px-6 py-6 space-y-8">
+              {/* Color mode toggle */}
+              <div>
+                <p
+                  className="text-xs font-medium uppercase tracking-widest mb-4"
+                  style={{ color: t.textMuted }}
+                >
+                  화면 모드
+                </p>
+                <div
+                  className="flex rounded-xl p-1"
+                  style={{ background: t.inputBg, border: `1px solid ${t.inputBorder}` }}
+                >
+                  {(['light', 'dark'] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setColorMode(mode)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all"
+                      style={
+                        colorMode === mode
+                          ? { background: accentColor, color: '#fff' }
+                          : { background: 'transparent', color: t.textMuted }
+                      }
+                    >
+                      {mode === 'light' ? <Sun size={13} /> : <Moon size={13} />}
+                      {mode === 'light' ? '라이트' : '다크'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Accent color */}
               <div>
-                <p className="text-xs font-medium text-[rgba(235,235,245,0.5)] uppercase tracking-widest mb-4">
+                <p
+                  className="text-xs font-medium uppercase tracking-widest mb-4"
+                  style={{ color: t.textMuted }}
+                >
                   메인 컬러
                 </p>
                 <div className="grid grid-cols-6 gap-2.5 mb-4">
@@ -71,7 +125,13 @@ export default function ThemePanel() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]">
+                <div
+                  className="flex items-center gap-3 p-3 rounded-xl"
+                  style={{
+                    background: t.inputBg,
+                    border: `1px solid ${t.inputBorder}`
+                  }}
+                >
                   <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0">
                     <input
                       type="color"
@@ -81,20 +141,25 @@ export default function ThemePanel() {
                     />
                     <div className="w-full h-full rounded-lg" style={{ background: accentColor }} />
                   </div>
-                  <span className="text-sm font-mono text-[rgba(235,235,245,0.6)]">
+                  <span className="text-sm font-mono" style={{ color: t.textSecondary }}>
                     {accentColor.toUpperCase()}
                   </span>
-                  <span className="text-xs text-[rgba(235,235,245,0.3)] ml-auto">직접 선택</span>
+                  <span className="text-xs ml-auto" style={{ color: t.textSubtle }}>
+                    직접 선택
+                  </span>
                 </div>
               </div>
 
               {/* Opacity */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs font-medium text-[rgba(235,235,245,0.5)] uppercase tracking-widest">
+                  <p
+                    className="text-xs font-medium uppercase tracking-widest"
+                    style={{ color: t.textMuted }}
+                  >
                     위젯 투명도
                   </p>
-                  <span className="text-sm font-mono text-[rgba(235,235,245,0.5)]">
+                  <span className="text-sm font-mono" style={{ color: t.textMuted }}>
                     {widgetOpacity}%
                   </span>
                 </div>
@@ -107,19 +172,22 @@ export default function ThemePanel() {
                   value={widgetOpacity}
                   onChange={(e) => setWidgetOpacity(Number(e.target.value))}
                   className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{ accentColor }}
+                  style={{ accentColor } as React.CSSProperties}
                 />
-                <div className="flex justify-between text-[11px] text-[rgba(235,235,245,0.25)] mt-2">
+                <div
+                  className="flex justify-between text-[11px] mt-2"
+                  style={{ color: t.textSubtle }}
+                >
                   <span>투명</span>
                   <span>불투명</span>
                 </div>
 
-                {/* Preview swatch */}
                 <div
-                  className="mt-4 h-10 rounded-xl border border-[rgba(255,255,255,0.07)]"
+                  className="mt-4 h-10 rounded-xl"
                   style={{
-                    background: `rgba(28, 28, 36, ${widgetOpacity / 100})`,
-                    backdropFilter: 'blur(20px)'
+                    background: t.widgetBg(widgetOpacity),
+                    backdropFilter: 'blur(20px)',
+                    border: `1px solid ${t.widgetBorder}`
                   }}
                 />
               </div>
