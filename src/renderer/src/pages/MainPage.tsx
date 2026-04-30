@@ -1,6 +1,7 @@
 import { LogOut } from 'lucide-react'
 import { useAuthStore } from '@renderer/stores/authStore'
 import { useThemeStore } from '@renderer/stores/themeStore'
+import { getTokens } from '@renderer/lib/theme'
 import Clock from '@renderer/components/Clock'
 import CalendarWidget from '@renderer/components/CalendarWidget'
 import TodoList from '@renderer/components/TodoList'
@@ -8,13 +9,14 @@ import ThemePanel from '@renderer/components/ThemePanel'
 
 export default function MainPage() {
   const logout = useAuthStore((s) => s.logout)
-  const { accentColor, widgetOpacity } = useThemeStore()
+  const { colorMode } = useThemeStore()
+  const t = getTokens(colorMode)
 
   return (
-    <div className="h-screen flex flex-col bg-[#1b1b1f] p-5 gap-4 overflow-hidden">
+    <div className="h-screen flex flex-col p-5 gap-4 overflow-hidden" style={{ background: t.bg }}>
       {/* Top bar */}
       <div className="flex items-center justify-between shrink-0">
-        <span className="text-sm font-semibold tracking-wider text-[rgba(235,235,245,0.7)]">
+        <span className="text-sm font-semibold tracking-wider" style={{ color: t.textSecondary }}>
           sync-mate
         </span>
         <div className="flex items-center gap-1">
@@ -22,7 +24,16 @@ export default function MainPage() {
           <button
             onClick={logout}
             title="로그아웃"
-            className="p-2 rounded-xl hover:bg-[rgba(255,255,255,0.07)] transition-colors text-[rgba(235,235,245,0.45)] hover:text-white"
+            className="p-2 rounded-xl transition-colors"
+            style={{ color: t.textMuted }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = t.hoverBg
+              e.currentTarget.style.color = t.text
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = t.textMuted
+            }}
           >
             <LogOut size={17} />
           </button>
@@ -31,9 +42,9 @@ export default function MainPage() {
 
       {/* Widget grid */}
       <div className="flex-1 grid grid-cols-3 gap-4 min-h-0">
-        <Clock accentColor={accentColor} opacity={widgetOpacity} />
-        <CalendarWidget accentColor={accentColor} opacity={widgetOpacity} />
-        <TodoList accentColor={accentColor} opacity={widgetOpacity} />
+        <Clock />
+        <CalendarWidget />
+        <TodoList />
       </div>
     </div>
   )
