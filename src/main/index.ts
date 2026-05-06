@@ -3,6 +3,11 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+// [추가] GPU 가속 비활성화 및 화면 배율 고정
+// 이 설정이 GPU 에러를 방지하고 웹과 동일한 비율을 유지하게 도와줍니다.
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('force-device-scale-factor', '1');
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -13,7 +18,9 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      // [추가] 줌 레벨을 1로 고정하여 웹 브라우저 100% 상태와 동일하게 설정
+      zoomFactor: 1.0
     }
   })
 

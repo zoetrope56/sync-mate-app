@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useThemeStore } from '@renderer/stores/themeStore'
 import { getTokens } from '@renderer/lib/theme'
+import { widgetBase, iconBtnHover, iconBtnLeave } from '@styles/common.styles'
+import { getCalendarStyles } from '@styles/CalendarWidget.styles'
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -34,6 +36,7 @@ function buildCells(year: number, month: number): Cell[] {
 export default function CalendarWidget() {
   const { colorMode, accentColor, widgetOpacity } = useThemeStore()
   const t = getTokens(colorMode)
+  const s = getCalendarStyles(t, accentColor)
   const today = new Date()
   const [view, setView] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
 
@@ -49,60 +52,38 @@ export default function CalendarWidget() {
 
   return (
     <div
-      className="rounded-2xl p-6 h-full flex flex-col"
-      style={{
-        background: t.widgetBg(widgetOpacity),
-        backdropFilter: 'blur(20px)',
-        border: `1px solid ${t.widgetBorder}`
-      }}
+      className="rounded-2xl h-full flex flex-col"
+      style={{ ...widgetBase(t, widgetOpacity), padding: '24px 20px' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between" style={{ marginBottom: 20 }}>
         <button
           onClick={() => setView(new Date(year, month - 1, 1))}
           className="p-1.5 rounded-lg transition-colors"
           style={{ color: t.textMuted }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = t.hoverBg
-            e.currentTarget.style.color = t.text
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = t.textMuted
-          }}
+          onMouseEnter={(e) => Object.assign(e.currentTarget.style, iconBtnHover(t))}
+          onMouseLeave={(e) => Object.assign(e.currentTarget.style, iconBtnLeave(t))}
         >
           <ChevronLeft size={15} />
         </button>
-        <h3 className="text-sm font-medium tracking-wide" style={{ color: t.text }}>
-          {year}년 {month + 1}월
-        </h3>
+
+        <h3 style={s.monthTitle}>{year}년 {month + 1}월</h3>
+
         <button
           onClick={() => setView(new Date(year, month + 1, 1))}
           className="p-1.5 rounded-lg transition-colors"
           style={{ color: t.textMuted }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = t.hoverBg
-            e.currentTarget.style.color = t.text
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = t.textMuted
-          }}
+          onMouseEnter={(e) => Object.assign(e.currentTarget.style, iconBtnHover(t))}
+          onMouseLeave={(e) => Object.assign(e.currentTarget.style, iconBtnLeave(t))}
         >
           <ChevronRight size={15} />
         </button>
       </div>
 
       {/* Day labels */}
-      <div className="grid grid-cols-7 mb-1">
+      <div className="grid grid-cols-7" style={{ marginBottom: 6 }}>
         {DAY_LABELS.map((d, i) => (
-          <div
-            key={d}
-            className="text-center text-[11px] font-medium py-1"
-            style={{
-              color: i === 0 ? t.sunday : i === 6 ? t.saturday : t.textSubtle
-            }}
-          >
+          <div key={d} className="text-center py-1" style={s.dayLabel(i)}>
             {d}
           </div>
         ))}
@@ -113,21 +94,13 @@ export default function CalendarWidget() {
         {cells.map((cell, idx) => {
           const todayCell = isToday(cell)
           const dow = idx % 7
-
-          let textColor = t.textSecondary
-          if (!cell.current) textColor = t.textSubtle
-          else if (dow === 0) textColor = t.sunday
-          else if (dow === 6) textColor = t.saturday
+          const textColor = s.dateCellColor(cell.current, dow)
 
           return (
             <div key={idx} className="flex items-center justify-center">
               <span
-                className="w-7 h-7 flex items-center justify-center rounded-full text-xs transition-colors cursor-default"
-                style={{
-                  background: todayCell ? accentColor : 'transparent',
-                  color: todayCell ? '#fff' : textColor,
-                  fontWeight: todayCell ? 600 : 400
-                }}
+                className="w-[28px] h-[28px] flex items-center justify-center rounded-full cursor-default transition-colors"
+                style={s.dateCell(todayCell, textColor)}
               >
                 {cell.day}
               </span>

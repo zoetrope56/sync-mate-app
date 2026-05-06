@@ -9,11 +9,16 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src')
+        '@renderer': resolve('src/renderer/src'),
+        '@styles': resolve('src/renderer/styles')
       }
     },
     plugins: [react(), tailwindcss()],
     server: {
+      watch: {
+        usePolling: true,
+        interval: 300
+      },
       proxy: {
         '/api': {
           target: 'http://localhost:8000',
