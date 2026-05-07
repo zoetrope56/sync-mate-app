@@ -2,6 +2,22 @@ import type { ThemeTokens } from '@renderer/lib/theme'
 
 export function getCalendarStyles(t: ThemeTokens, accentColor: string) {
   return {
+    container: {
+      padding: '24px 20px'
+    } as React.CSSProperties,
+
+    header: {
+      marginBottom: 20
+    } as React.CSSProperties,
+
+    navBtn: {
+      color: t.textMuted
+    } as React.CSSProperties,
+
+    dayLabelRow: {
+      marginBottom: 6
+    } as React.CSSProperties,
+
     monthTitle: {
       fontSize: 15,
       fontWeight: 600,

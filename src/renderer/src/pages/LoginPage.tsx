@@ -4,7 +4,7 @@ import { login, register } from '@renderer/api/auth'
 import { useAuthStore } from '@renderer/stores/authStore'
 import { useThemeStore } from '@renderer/stores/themeStore'
 import { getTokens } from '@renderer/lib/theme'
-import { getLoginStyles } from '@styles/LoginPage.styles'
+import { getLoginStyles } from '@styles/pages/LoginPage.styles'
 
 type Mode = 'login' | 'register'
 
@@ -98,12 +98,12 @@ export default function LoginPage() {
         style={s.card}
       >
         {/* Brand */}
-        <div style={{ marginBottom: 36 }}>
+        <div style={s.brandWrapper}>
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-            style={{ marginBottom: 20 }}
+            style={s.logoWrapper}
           >
             <OrbitalMark color={accentColor} />
           </motion.div>
@@ -123,7 +123,7 @@ export default function LoginPage() {
             transition={{ delay: 0.26, duration: 0.45 }}
             style={s.brandTitle}
           >
-            sync<span style={{ color: accentColor }}>·</span>mate
+            sync<span style={s.accentDot}>·</span>mate
           </motion.h1>
         </div>
 
@@ -155,7 +155,7 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.45 }}
           onSubmit={handleSubmit}
-          style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
+          style={s.form}
         >
           <div>
             <label style={s.fieldLabel}>이메일</label>

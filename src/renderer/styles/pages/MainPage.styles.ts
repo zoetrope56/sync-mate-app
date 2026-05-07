@@ -2,6 +2,10 @@ import type { ThemeTokens } from '@renderer/lib/theme'
 
 export function getMainStyles(t: ThemeTokens, accentColor: string) {
   return {
+    root: {
+      background: t.bg
+    } as React.CSSProperties,
+
     header: {
       height: 52,
       borderBottom: `1px solid ${t.divider}`
@@ -20,6 +24,14 @@ export function getMainStyles(t: ThemeTokens, accentColor: string) {
       fontFamily: "'Syne', system-ui, sans-serif",
       letterSpacing: '-0.025em'
     },
+
+    accentDot: {
+      color: accentColor
+    } as React.CSSProperties,
+
+    logoutBtn: {
+      color: t.textMuted
+    } as React.CSSProperties,
 
     grid: {
       display: 'grid',

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useThemeStore } from '@renderer/stores/themeStore'
 import { getTokens } from '@renderer/lib/theme'
-import { widgetBase } from '@styles/common.styles'
-import { getClockStyles } from '@styles/Clock.styles'
+import { widgetBase } from '@styles/Common.styles'
+import { getClockStyles } from '@styles/widgets/Clock.styles'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 const MONTHS = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
@@ -26,13 +26,13 @@ export default function Clock() {
   return (
     <div
       className="rounded-2xl flex flex-col items-center justify-center h-full"
-      style={{ ...widgetBase(t, widgetOpacity), padding: '32px 24px' }}
+      style={{ ...widgetBase(t, widgetOpacity), ...s.container }}
     >
       <p className="text-[11px] tracking-widest uppercase" style={s.dateLabel}>
         {DAYS[now.getDay()]}요일 · {MONTHS[now.getMonth()]} {now.getDate()}일
       </p>
 
-      <div style={{ marginBottom: 8 }}>
+      <div style={s.timeWrapper}>
         <span className="tabular-nums font-extralight tracking-tight leading-none" style={s.timeDisplay}>
           {h}:{m}
         </span>

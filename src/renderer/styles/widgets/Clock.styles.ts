@@ -2,6 +2,14 @@ import type { ThemeTokens } from '@renderer/lib/theme'
 
 export function getClockStyles(t: ThemeTokens, accentColor: string) {
   return {
+    container: {
+      padding: '32px 24px'
+    } as React.CSSProperties,
+
+    timeWrapper: {
+      marginBottom: 8
+    } as React.CSSProperties,
+
     dateLabel: {
       color: t.textMuted,
       marginBottom: 20,

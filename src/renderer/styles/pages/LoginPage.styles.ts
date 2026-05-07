@@ -194,6 +194,24 @@ export function getLoginStyles(t: ThemeTokens, opts: LoginStyleOpts) {
       fontSize: 12,
       fontWeight: 600,
       padding: 0
+    } as React.CSSProperties,
+
+    brandWrapper: {
+      marginBottom: 36
+    } as React.CSSProperties,
+
+    logoWrapper: {
+      marginBottom: 20
+    } as React.CSSProperties,
+
+    accentDot: {
+      color: accentColor
+    } as React.CSSProperties,
+
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 18
     } as React.CSSProperties
   }
 }

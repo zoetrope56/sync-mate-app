@@ -3,8 +3,8 @@ import { Plus, Trash2 } from 'lucide-react'
 import { useTodoStore } from '@renderer/stores/todoStore'
 import { useThemeStore } from '@renderer/stores/themeStore'
 import { getTokens } from '@renderer/lib/theme'
-import { widgetBase, widgetTitle, widgetCount, inputBase, inputFocusBorder, inputBlurBorder } from '@styles/common.styles'
-import { getTodoStyles } from '@styles/TodoList.styles'
+import { widgetBase, widgetTitle, widgetCount, inputBase, inputFocusBorder, inputBlurBorder } from '@styles/Common.styles'
+import { getTodoStyles } from '@styles/widgets/TodoList.styles'
 
 export default function TodoList() {
   const { colorMode, accentColor, widgetOpacity } = useThemeStore()
@@ -29,10 +29,10 @@ export default function TodoList() {
   return (
     <div
       className="rounded-2xl h-full flex flex-col"
-      style={{ ...widgetBase(t, widgetOpacity), padding: '24px 20px' }}
+      style={{ ...widgetBase(t, widgetOpacity), ...s.container }}
     >
       {/* Header */}
-      <div className="flex items-baseline justify-between" style={{ marginBottom: 18 }}>
+      <div className="flex items-baseline justify-between" style={s.header}>
         <h3 style={widgetTitle(t)}>할 일</h3>
         <span style={widgetCount(t)}>
           {pending.length > 0 ? `${pending.length}개 남음` : '모두 완료!'}
@@ -40,7 +40,7 @@ export default function TodoList() {
       </div>
 
       {/* Input row */}
-      <div className="flex gap-2" style={{ marginBottom: 14 }}>
+      <div className="flex gap-2" style={s.inputWrapper}>
         <input
           ref={inputRef}
           value={input}
@@ -62,13 +62,13 @@ export default function TodoList() {
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ marginRight: -4, paddingRight: 4 }}>
+      <div className="flex-1 overflow-y-auto min-h-0" style={s.listScroll}>
         {sorted.length === 0 ? (
           <p className="text-center py-10" style={s.emptyMsg}>
             할 일이 없어요!
           </p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={s.listInner}>
             {sorted.map((todo) => (
               <div
                 key={todo.id}
@@ -80,7 +80,7 @@ export default function TodoList() {
                 <button
                   onClick={() => toggleTodo(todo.id)}
                   className="shrink-0 rounded-full border-2 flex items-center justify-center transition-all"
-                  style={{ width: 18, height: 18, ...s.checkbox(todo.done) }}
+                  style={s.checkbox(todo.done)}
                 >
                   {todo.done && (
                     <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
@@ -102,7 +102,7 @@ export default function TodoList() {
                 <button
                   onClick={() => deleteTodo(todo.id)}
                   className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400"
-                  style={{ color: t.textSubtle }}
+                  style={s.deleteBtn}
                 >
                   <Trash2 size={13} />
                 </button>

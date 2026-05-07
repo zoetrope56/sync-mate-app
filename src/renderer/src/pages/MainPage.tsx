@@ -6,8 +6,8 @@ import Clock from '@renderer/components/Clock'
 import CalendarWidget from '@renderer/components/CalendarWidget'
 import TodoList from '@renderer/components/TodoList'
 import ThemePanel from '@renderer/components/ThemePanel'
-import { getMainStyles } from '@styles/MainPage.styles'
-import { iconBtnHover, iconBtnLeave } from '@styles/common.styles'
+import { getMainStyles } from '@styles/pages/MainPage.styles'
+import { iconBtnHover, iconBtnLeave } from '@styles/Common.styles'
 
 export default function MainPage() {
   const logout = useAuthStore((s) => s.logout)
@@ -16,7 +16,7 @@ export default function MainPage() {
   const s = getMainStyles(t, accentColor)
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ background: t.bg }}>
+    <div className="h-screen flex flex-col overflow-hidden" style={s.root}>
       <header className="flex items-center justify-between px-6 shrink-0" style={s.header}>
         <div className="flex items-center gap-2.5">
           <div style={s.brandDot} />
@@ -24,7 +24,7 @@ export default function MainPage() {
             className="text-sm font-bold tracking-tight"
             style={s.brandText}
           >
-            sync<span style={{ color: accentColor }}>·</span>mate
+            sync<span style={s.accentDot}>·</span>mate
           </span>
         </div>
 
@@ -34,7 +34,7 @@ export default function MainPage() {
             onClick={logout}
             title="로그아웃"
             className="p-2 rounded-xl transition-colors"
-            style={{ color: t.textMuted }}
+            style={s.logoutBtn}
             onMouseEnter={(e) => Object.assign(e.currentTarget.style, iconBtnHover(t))}
             onMouseLeave={(e) => Object.assign(e.currentTarget.style, iconBtnLeave(t))}
           >

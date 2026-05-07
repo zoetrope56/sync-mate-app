@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useThemeStore } from '@renderer/stores/themeStore'
 import { getTokens } from '@renderer/lib/theme'
-import { widgetBase, iconBtnHover, iconBtnLeave } from '@styles/common.styles'
-import { getCalendarStyles } from '@styles/CalendarWidget.styles'
+import { widgetBase, iconBtnHover, iconBtnLeave } from '@styles/Common.styles'
+import { getCalendarStyles } from '@styles/widgets/CalendarWidget.styles'
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -53,14 +53,14 @@ export default function CalendarWidget() {
   return (
     <div
       className="rounded-2xl h-full flex flex-col"
-      style={{ ...widgetBase(t, widgetOpacity), padding: '24px 20px' }}
+      style={{ ...widgetBase(t, widgetOpacity), ...s.container }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between" style={{ marginBottom: 20 }}>
+      <div className="flex items-center justify-between" style={s.header}>
         <button
           onClick={() => setView(new Date(year, month - 1, 1))}
           className="p-1.5 rounded-lg transition-colors"
-          style={{ color: t.textMuted }}
+          style={s.navBtn}
           onMouseEnter={(e) => Object.assign(e.currentTarget.style, iconBtnHover(t))}
           onMouseLeave={(e) => Object.assign(e.currentTarget.style, iconBtnLeave(t))}
         >
@@ -72,7 +72,7 @@ export default function CalendarWidget() {
         <button
           onClick={() => setView(new Date(year, month + 1, 1))}
           className="p-1.5 rounded-lg transition-colors"
-          style={{ color: t.textMuted }}
+          style={s.navBtn}
           onMouseEnter={(e) => Object.assign(e.currentTarget.style, iconBtnHover(t))}
           onMouseLeave={(e) => Object.assign(e.currentTarget.style, iconBtnLeave(t))}
         >
@@ -81,7 +81,7 @@ export default function CalendarWidget() {
       </div>
 
       {/* Day labels */}
-      <div className="grid grid-cols-7" style={{ marginBottom: 6 }}>
+      <div className="grid grid-cols-7" style={s.dayLabelRow}>
         {DAY_LABELS.map((d, i) => (
           <div key={d} className="text-center py-1" style={s.dayLabel(i)}>
             {d}
