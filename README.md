@@ -18,23 +18,60 @@
 
 ### 통합 실행 (API + 앱 동시 구동)
 
-```bash
-cd ~/project/syncmate
-./start.sh
-```
+`~/project/syncmate/start.sh` — API 서버와 Electron 앱을 한 번에 구동합니다. `Ctrl+C`로 두 프로세스를 함께 종료할 수 있습니다.
 
-API 서버와 Electron 앱을 한 번에 구동합니다. `Ctrl+C`로 두 프로세스를 함께 종료할 수 있습니다.
+```bash
+#!/bin/bash
+set -e
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+API_DIR="$PROJECT_DIR/sync-mate-api"
+APP_DIR="$PROJECT_DIR/sync-mate-app"
+
+cleanup() {
+  [ -n "$API_PID" ] && kill "$API_PID" 2>/dev/null
+  [ -n "$APP_PID" ] && kill "$APP_PID" 2>/dev/null
+  exit 0
+}
+trap cleanup SIGINT SIGTERM
+
+# API 서버
+if [ ! -d "$API_DIR/venv" ]; then python3 -m venv "$API_DIR/venv"; fi
+"$API_DIR/venv/bin/pip" install -r "$API_DIR/requirements.txt" -q
+if [ ! -f "$API_DIR/.env" ]; then echo ".env not found"; exit 1; fi
+(cd "$API_DIR" && "$API_DIR/venv/bin/alembic" upgrade head)
+(cd "$API_DIR" && "$API_DIR/venv/bin/uvicorn" app.main:app --reload --host 0.0.0.0 --port 8000) &
+API_PID=$!
+
+# Electron 앱
+if [ ! -d "$APP_DIR/node_modules" ]; then (cd "$APP_DIR" && npm install); fi
+if [ ! -f "$APP_DIR/node_modules/electron/path.txt" ]; then
+  (cd "$APP_DIR" && node node_modules/electron/install.js)
+fi
+(cd "$APP_DIR" && npm run dev) &
+APP_PID=$!
+
+wait
+```
 
 > `sync-mate-api/.env` 파일이 없으면 실행이 중단됩니다.
 
 ### 앱만 단독 실행
 
-```bash
-# 간편 실행 (의존성 설치 + Electron 바이너리 자동 처리)
-./start.sh
+`sync-mate-app/start.sh` — API 서버는 별도로 실행한 상태에서 앱만 구동합니다.
 
-# 또는 수동으로
-npm install
+```bash
+#!/bin/bash
+set -e
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$PROJECT_DIR"
+
+if [ ! -d "node_modules" ]; then npm install; fi
+if [ ! -f "node_modules/electron/path.txt" ]; then
+  node node_modules/electron/install.js
+fi
+
 npm run dev
 ```
 
@@ -70,9 +107,42 @@ npm run build:linux
 
 ```
 src/
-├── main/        # Node.js — BrowserWindow, IPC 핸들러
-├── preload/     # contextBridge — renderer에 안전한 API 노출
-└── renderer/    # React 앱 (Chromium)
+├── main/
+│   └── index.ts              # BrowserWindow 생성, IPC 핸들러 등록
+├── preload/
+│   ├── index.ts              # contextBridge로 renderer에 안전한 API 노출
+│   └── index.d.ts            # window.api 타입 선언
+└── renderer/
+    ├── index.html
+    ├── styles/               # 컴포넌트별 공유 스타일 (Tailwind 클래스 상수)
+    │   ├── common.styles.ts
+    │   ├── CalendarWidget.styles.ts
+    │   ├── Clock.styles.ts
+    │   ├── LoginPage.styles.ts
+    │   ├── MainPage.styles.ts
+    │   └── TodoList.styles.ts
+    └── src/
+        ├── main.tsx          # React 진입점
+        ├── App.tsx           # 라우팅 (로그인 ↔ 메인)
+        ├── api/
+        │   ├── client.ts     # axios 인스턴스 (baseURL, 인터셉터)
+        │   └── auth.ts       # 로그인 / 로그아웃 API
+        ├── components/
+        │   ├── CalendarWidget.tsx
+        │   ├── Clock.tsx
+        │   ├── ThemePanel.tsx
+        │   ├── TodoList.tsx
+        │   └── Versions.tsx
+        ├── pages/
+        │   ├── LoginPage.tsx
+        │   └── MainPage.tsx
+        ├── stores/           # Zustand 전역 상태
+        │   ├── authStore.ts  # 인증 토큰 / 사용자 정보
+        │   ├── themeStore.ts # 테마 설정
+        │   └── todoStore.ts  # Todo 목록
+        ├── lib/
+        │   └── theme.ts      # 테마 유틸리티
+        └── assets/           # SVG, CSS
 ```
 
 IPC: `ipcMain` (main) ↔ `window.electron.ipcRenderer` (renderer, preload 경유)
