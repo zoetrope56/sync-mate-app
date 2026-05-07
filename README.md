@@ -16,10 +16,29 @@
 
 ## 개발 시작
 
+### 통합 실행 (API + 앱 동시 구동)
+
 ```bash
+cd ~/project/syncmate
+./start.sh
+```
+
+API 서버와 Electron 앱을 한 번에 구동합니다. `Ctrl+C`로 두 프로세스를 함께 종료할 수 있습니다.
+
+> `sync-mate-api/.env` 파일이 없으면 실행이 중단됩니다.
+
+### 앱만 단독 실행
+
+```bash
+# 간편 실행 (의존성 설치 + Electron 바이너리 자동 처리)
+./start.sh
+
+# 또는 수동으로
 npm install
 npm run dev
 ```
+
+> API 서버는 `sync-mate-api/start.sh`에서 별도로 실행합니다.
 
 ## 주요 명령어
 
