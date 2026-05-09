@@ -35,6 +35,16 @@ export function getTodoStyles(t: ThemeTokens, accentColor: string) {
       lineHeight: 1.4
     } as React.CSSProperties,
 
+    timeInput: (disabled: boolean): React.CSSProperties => ({
+      padding: '8px 10px',
+      fontSize: 12,
+      lineHeight: 1.4,
+      width: 96,
+      flexShrink: 0,
+      opacity: disabled ? 0.4 : 1,
+      cursor: disabled ? 'not-allowed' : 'text'
+    }),
+
     addBtn: {
       width: 38,
       height: 38,

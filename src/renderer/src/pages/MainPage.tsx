@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { LogOut } from 'lucide-react'
 import { useAuthStore } from '@renderer/stores/authStore'
+import { useTodoStore } from '@renderer/stores/todoStore'
 import { useThemeStore } from '@renderer/stores/themeStore'
 import { getTokens } from '@renderer/lib/theme'
 import Clock from '@renderer/components/Clock'
@@ -11,7 +13,12 @@ import { iconBtnHover, iconBtnLeave } from '@styles/Common.styles'
 
 export default function MainPage() {
   const logout = useAuthStore((s) => s.logout)
+  const fetchTodos = useTodoStore((s) => s.fetchTodos)
   const { colorMode, accentColor } = useThemeStore()
+
+  useEffect(() => {
+    fetchTodos()
+  }, [])
   const t = getTokens(colorMode)
   const s = getMainStyles(t, accentColor)
 

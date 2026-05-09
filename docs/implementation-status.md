@@ -1,10 +1,10 @@
 # 구현 현황
 
-> 최종 업데이트: 2026-05-08
+> 최종 업데이트: 2026-05-09
 
 ## 요약
 
-**Todo 기본 UI + todoStore 완료 단계.** 로그인/JWT 인증, Todo 목록 UI(추가·완료·삭제), Zustand todoStore(localStorage 영속화)까지 구현됨. 다음 단계는 Todo 마감일/알람 UI 및 Axios API 연동.
+**Todo Axios API 연동 완료 단계.** 로그인/JWT 인증, Todo CRUD UI, Zustand todoStore(localStorage 영속화), 마감일/인라인 편집 UI, 백엔드 REST API 연동(GET/POST/PATCH/DELETE)까지 구현됨. 다음 단계는 캐릭터 컴포넌트.
 
 ---
 
@@ -52,7 +52,7 @@
 | 인증 API 레이어 — login (form-urlencoded), register (`api/auth.ts`) | ✅ 완료 |
 | Zustand authStore — localStorage 영속화 | ✅ 완료 |
 | 로그인·회원가입 화면 (`LoginPage.tsx`) | ✅ 완료 |
-| Todo API 레이어 (`api/todos.ts`) — GET/POST/PATCH/DELETE | ⏸ 백엔드 대기 |
+| Todo API 레이어 (`api/todos.ts`) — GET/POST/PATCH/DELETE | ✅ 완료 |
 | Socket.io 연결 및 이벤트 핸들러 | ❌ 미구현 |
 
 ---
@@ -71,8 +71,8 @@
 
 1. ~~**로그인 화면** → JWT 발급 및 저장~~ ✅ 완료
 2. ~~**Todo 기본 UI + Zustand todoStore** → 핵심 기능~~ ✅ 완료
-3. **Todo 마감일/알람 UI + editTodo** → 타입 확장, localStorage 기반 ← **현재 단계**
-4. **Todo Axios API 연동** → 백엔드 완성 후, GET/POST/PATCH/DELETE `/todos/`
-4. **캐릭터 컴포넌트** → Framer Motion 기반 감정 애니메이션
+3. ~~**Todo 마감일/알람 UI + editTodo** → 타입 확장, localStorage 기반~~ ✅ 완료
+4. ~~**Todo Axios API 연동** → 백엔드 완성 후, GET/POST/PATCH/DELETE `/todos/`~~ ✅ 완료
+5. **캐릭터 컴포넌트** → Framer Motion 기반 감정 애니메이션 ← **현재 단계**
 5. **Socket.io 연결** → 실시간 동기화
 6. **Electron 위젯 모드** → 투명 배경, 트레이 등록

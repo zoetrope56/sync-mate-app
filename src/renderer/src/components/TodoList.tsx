@@ -8,12 +8,16 @@ import { widgetBase, widgetTitle, widgetCount, inputBase, inputFocusBorder, inpu
 import { getTodoStyles } from '@styles/widgets/TodoList.styles'
 
 function formatDueDate(ts: number): { label: string; overdue: boolean } {
-  const dueDay = startOfDay(new Date(ts))
+  const date = new Date(ts)
+  const hasTime = date.getHours() !== 0 || date.getMinutes() !== 0
+  const timeStr = hasTime ? ` ${format(date, 'HH:mm')}` : ''
+  const dueDay = startOfDay(date)
   const today = startOfDay(new Date())
-  if (isToday(dueDay)) return { label: '오늘', overdue: false }
-  if (isTomorrow(dueDay)) return { label: '내일', overdue: false }
-  if (isBefore(dueDay, today)) return { label: format(dueDay, 'M월 d일'), overdue: true }
-  return { label: format(dueDay, 'M월 d일'), overdue: false }
+  const overdue = isBefore(date, new Date())
+  if (isToday(dueDay)) return { label: `오늘${timeStr}`, overdue: hasTime ? overdue : false }
+  if (isTomorrow(dueDay)) return { label: `내일${timeStr}`, overdue: false }
+  if (isBefore(dueDay, today)) return { label: `${format(dueDay, 'M월 d일')}${timeStr}`, overdue: true }
+  return { label: `${format(dueDay, 'M월 d일')}${timeStr}`, overdue: false }
 }
 
 export default function TodoList() {
@@ -24,6 +28,7 @@ export default function TodoList() {
 
   const [input, setInput] = useState('')
   const [dueInput, setDueInput] = useState('')
+  const [timeInput, setTimeInput] = useState('')
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
@@ -33,10 +38,13 @@ export default function TodoList() {
   const handleAdd = () => {
     const text = input.trim()
     if (!text) return
-    const dueDate = dueInput ? new Date(dueInput + 'T00:00:00').getTime() : undefined
+    const dueDate = dueInput
+      ? new Date(`${dueInput}T${timeInput || '00:00'}:00`).getTime()
+      : undefined
     addTodo(text, dueDate)
     setInput('')
     setDueInput('')
+    setTimeInput('')
     setShowDatePicker(false)
     inputRef.current?.focus()
   }
@@ -102,15 +110,27 @@ export default function TodoList() {
         </div>
 
         {showDatePicker && (
-          <input
-            type="date"
-            value={dueInput}
-            onChange={(e) => setDueInput(e.target.value)}
-            className="w-full rounded-xl focus:outline-none transition-colors mt-2"
-            style={{ ...inputBase(t), ...s.dateInput }}
-            onFocus={(e) => Object.assign(e.currentTarget.style, inputFocusBorder(t))}
-            onBlur={(e) => Object.assign(e.currentTarget.style, inputBlurBorder(t))}
-          />
+          <div className="flex gap-2 mt-2">
+            <input
+              type="date"
+              value={dueInput}
+              onChange={(e) => setDueInput(e.target.value)}
+              className="flex-1 rounded-xl focus:outline-none transition-colors"
+              style={{ ...inputBase(t), ...s.dateInput }}
+              onFocus={(e) => Object.assign(e.currentTarget.style, inputFocusBorder(t))}
+              onBlur={(e) => Object.assign(e.currentTarget.style, inputBlurBorder(t))}
+            />
+            <input
+              type="time"
+              value={timeInput}
+              onChange={(e) => setTimeInput(e.target.value)}
+              disabled={!dueInput}
+              className="rounded-xl focus:outline-none transition-colors"
+              style={{ ...inputBase(t), ...s.timeInput(!dueInput) }}
+              onFocus={(e) => Object.assign(e.currentTarget.style, inputFocusBorder(t))}
+              onBlur={(e) => Object.assign(e.currentTarget.style, inputBlurBorder(t))}
+            />
+          </div>
         )}
       </div>
 
