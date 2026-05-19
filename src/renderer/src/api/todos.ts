@@ -2,19 +2,19 @@ import client from './client'
 
 export interface TodoDTO {
   id: number
-  content: string
+  title: string
   is_completed: boolean
   due_date: string | null
   created_at: string
 }
 
 interface CreateBody {
-  content: string
+  title: string
   due_date?: string | null
 }
 
 interface UpdateBody {
-  content?: string
+  title?: string
   is_completed?: boolean
   due_date?: string | null
 }

@@ -22,10 +22,10 @@ interface TodoState {
 function fromDTO(dto: TodoDTO): Todo {
   return {
     id: String(dto.id),
-    text: dto.content,
+    text: dto.title,
     done: dto.is_completed,
-    createdAt: new Date(dto.created_at).getTime(),
-    dueDate: dto.due_date ? new Date(dto.due_date + 'T00:00:00').getTime() : undefined
+    createdAt: new Date(dto.created_at.replace(' ', 'T')).getTime(),
+    dueDate: dto.due_date ? new Date(dto.due_date.replace(' ', 'T')).getTime() : undefined
   }
 }
 
@@ -72,7 +72,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     set({ todos: withTemp })
 
     try {
-      const dto = await todosApi.create({ content: text, due_date: toServerDueDate(dueDate) })
+      const dto = await todosApi.create({ title: text, due_date: toServerDueDate(dueDate) })
       const confirmed = get().todos.map((t) => (t.id === tempId ? fromDTO(dto) : t))
       persist(confirmed)
       set({ todos: confirmed })
@@ -107,7 +107,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 
     try {
       const body: Parameters<typeof todosApi.update>[1] = {}
-      if (patch.text !== undefined) body.content = patch.text
+      if (patch.text !== undefined) body.title = patch.text
       if (patch.dueDate !== undefined) body.due_date = toServerDueDate(patch.dueDate)
       await todosApi.update(sid, body)
     } catch {
